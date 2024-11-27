@@ -33,26 +33,27 @@ def pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, col
     patch_flag:bool = True
     true_count:int = 0
     false_count:int = 0
-    for x in range(top_left_x, top_left_x + patch_size, sub_patch_size):
-        for y in range(top_left_y, top_left_y + patch_size, sub_patch_size):
+    for y in range(top_left_y, top_left_y + patch_size, sub_patch_size):
+        for x in range(top_left_x, top_left_x + patch_size, sub_patch_size):
             draw_rect(window, Point(x, y), Point(x+sub_patch_size, y+sub_patch_size), "white", "black")
                         
             if patch_flag == True and true_count < 1:
-                sub_pen_patch(window, x, y, sub_patch_size, colour, True, False)
+                flipped = False
                 true_count += 1
             elif patch_flag == False and false_count < 1:
-                sub_pen_patch(window, x, y, sub_patch_size, colour, False, False)
+                flipped = False
                 false_count += 1
             elif patch_flag == True and true_count == 1:
-                sub_pen_patch(window, x, y, sub_patch_size, colour, True, True)
+                flipped = True
                 true_count = 0
             elif patch_flag == False and false_count == 1:
-                sub_pen_patch(window, x, y, sub_patch_size, colour, False, True)
+                flipped = True
                 false_count = 0
+            sub_pen_patch(window, x, y, sub_patch_size, colour, patch_flag, flipped)
             
             patch_flag:bool = not patch_flag
     
-def sub_pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str, variant:bool, flipped:bool):
+def sub_pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str, variant:bool, flipped:bool) -> None:
     rect_size:int = patch_size // 4 #There are 4 rectangles per patch
     patch_flag:bool = True
     
@@ -68,16 +69,16 @@ def sub_pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int,
             draw_rect(window, Point(top_left_x, y), Point(top_left_x + patch_size, y+rect_size), fill_colour, "black")
     elif variant == False:
         for x in range(top_left_x, top_left_x + patch_size, rect_size):
-            if patch_flag == True: fill_colour = colour
-            elif patch_flag == False: fill_colour = "white"
+            if patch_flag == True: fill_colour = colours[0]
+            elif patch_flag == False: fill_colour = colours[1]
             patch_flag:bool = not patch_flag
             draw_rect(window, Point(x, top_left_y), Point(x + rect_size, top_left_y + patch_size), fill_colour, "black")
 
-def fin_patch(window, top_left_x, top_left_y, patch_size, colour):
+def fin_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> None:
     ...
     
-def pln_patch(window, top_left_x, top_left_y, patch_size, colour):
-    ...
+def pln_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> None:
+    draw_rect(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), colour, "black")
 
 def reverse_list(list_to_reverse:list) -> list:
     reversed_list:list = []
@@ -94,7 +95,8 @@ def main():
     win = Window("Patchwork", PATCHWORK_SIZE, PATCHWORK_SIZE)
     win.background_colour = "white"
     
-    pen_patch(win, 150, 230, 100, "red")
+    #Testing
+    pen_patch(win, 150, 230, 100, COLOURS[0])
     
     #Close window after mouse click
     win.get_mouse()
