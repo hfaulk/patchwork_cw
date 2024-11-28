@@ -11,7 +11,7 @@ __version__ = "0.4"
 __author__ = "Harry Faulkner"
 
 #Imports
-from graphix import GraphixObject, Window, Text, Point, Circle, Rectangle
+from graphix import GraphixObject, Window, Point, Circle, Rectangle, Line
 
 #Classes
 class Group:
@@ -320,3 +320,8 @@ def draw_circ(window:Window,
     circ.outline_width = outline_width
     full_fill(circ, fill_colour, outline_colour)
     circ.draw(window)
+    
+def draw_line(window, point_1, point_2, colour):
+    line = Line(point_1, point_2)
+    line.fill_colour = colour
+    line.draw(window)

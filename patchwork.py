@@ -1,5 +1,5 @@
 from graphix import Window, Point, Rectangle, Circle
-from graphix_plus import full_fill, draw_rect, draw_circ, relative_point
+from graphix_plus import full_fill, draw_rect, draw_line, draw_circ, relative_point
 
 def get_params() -> tuple[int, list]:
     #Allowed inputs
@@ -75,7 +75,20 @@ def sub_pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int,
             draw_rect(window, Point(x, top_left_y), Point(x + rect_size, top_left_y + patch_size), fill_colour, "black")
 
 def fin_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> None:
-    ...
+    draw_rect(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), "white", "black")
+    line_sep:int = patch_size // 10
+    count:int = 1
+    for x in range(top_left_x, top_left_x + patch_size, line_sep):
+        point_1:Point = Point(x, top_left_y)
+        point_2:Point = Point(top_left_x + patch_size, top_left_y + (count + line_sep))
+        draw_line(window, point_1, point_2, colour)
+        count += line_sep
+    count:int = 1
+    for y in range(top_left_y, top_left_y + patch_size, line_sep):
+        point_1:Point = Point(top_left_x, y)
+        point_2:Point = Point(top_left_x + (count + line_sep), top_left_y + patch_size)
+        draw_line(window, point_1, point_2, colour)
+        count += line_sep
     
 def pln_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> None:
     draw_rect(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), colour, "black")
@@ -85,6 +98,9 @@ def reverse_list(list_to_reverse:list) -> list:
     for index in range(len(list_to_reverse) - 1, -1, -1):
         reversed_list.append(list_to_reverse[index])
     return reversed_list
+
+def patchwork(window, patchwork_size, colours):
+    ...
 
 def main():
     #Program Constants
@@ -96,7 +112,7 @@ def main():
     win.background_colour = "white"
     
     #Testing
-    pen_patch(win, 150, 230, 100, COLOURS[0])
+    fin_patch(win, 150, 230, 100, COLOURS[1])
     
     #Close window after mouse click
     win.get_mouse()
