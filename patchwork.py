@@ -15,9 +15,9 @@ def get_params() -> tuple[int, list]:
         
         #Colour Params
         colours:list[str] = []
-        colours.append(input("Enter first colour: "))
-        colours.append(input("Enter second colour: "))
-        colours.append(input("Enter third colour: "))
+        colours.append(input("Enter first colour: ").lower())
+        colours.append(input("Enter second colour: ").lower())
+        colours.append(input("Enter third colour: ").lower())
         if len(colours) != len(set(colours)):
             print("(-) All colours must be different.\n")
             continue
@@ -99,8 +99,25 @@ def reverse_list(list_to_reverse:list) -> list:
         reversed_list.append(list_to_reverse[index])
     return reversed_list
 
-def patchwork(window, patchwork_size, colours):
-    ...
+def patchwork(window:Window, patchwork_size:int, patch_size:int, colours:list) -> None:
+    for x in range(0, patchwork_size, patch_size):
+        for y in range(0, patchwork_size, patch_size):
+            if (y == 0 and x != 0) or (x == patchwork_size - patch_size and y != x):
+                fin_patch(window, x, y, patch_size, colours[1])
+            if ((x//patch_size) % 2 == 0): #odd columns
+                if (x <= y) and (x > patch_size and y < patchwork_size - patch_size):
+                    pen_patch(window, x, y, patch_size, colours[0])
+                elif y >= x:
+                    pln_patch(window, x, y, patch_size, colours[0])
+                elif (y >= patch_size) and (x < patchwork_size - patch_size):
+                    pln_patch(window, x, y, patch_size, colours[1])
+            else:
+                if (y >= patch_size) and (y < patchwork_size - patch_size) and (y >= x):
+                    pen_patch(window, x, y, patch_size, colours[2])
+                elif (y <= x) and (y >= patch_size):
+                    pln_patch(window, x, y, patch_size, colours[1])
+                elif y == patchwork_size - patch_size:
+                    pln_patch(window, x, y, patch_size, colours[2])
 
 def main():
     #Program Constants
@@ -111,8 +128,8 @@ def main():
     win = Window("Patchwork", PATCHWORK_SIZE, PATCHWORK_SIZE)
     win.background_colour = "white"
     
-    #Testing
-    fin_patch(win, 150, 230, 100, COLOURS[1])
+    #Draw patchwork
+    patchwork(win, PATCHWORK_SIZE, PATCH_SIZE, COLOURS)
     
     #Close window after mouse click
     win.get_mouse()
