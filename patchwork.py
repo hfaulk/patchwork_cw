@@ -8,7 +8,11 @@ def get_params() -> tuple[int, list]:
     
     while True:
         #Patchwork Params
-        patchwork_size:int = int(input("What patchwork size do you want? "))
+        patchwork_size:int = input("What patchwork size do you want? ")
+        if not patchwork_size.isdigit():
+            print("(-) Patchwork size must be an integer\n")
+            continue
+        else: patchwork_size = int(patchwork_size)
         if patchwork_size not in valid_sizes:
             print(f"(-) Patchwork size must be one of {valid_sizes}.\n")
             continue
