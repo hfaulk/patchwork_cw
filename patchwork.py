@@ -38,16 +38,16 @@ def pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, col
             draw_rect(window, Point(x, y), Point(x+sub_patch_size, y+sub_patch_size), "white", "black")
                         
             if patch_flag == True and true_count < 1:
-                flipped = False
+                flipped:bool = False
                 true_count += 1
             elif patch_flag == False and false_count < 1:
-                flipped = False
+                flipped:bool = False
                 false_count += 1
             elif patch_flag == True and true_count == 1:
-                flipped = True
+                flipped:bool = True
                 true_count = 0
             elif patch_flag == False and false_count == 1:
-                flipped = True
+                flipped:bool = True
                 false_count = 0
             sub_pen_patch(window, x, y, sub_patch_size, colour, patch_flag, flipped)
             
@@ -104,7 +104,7 @@ def patchwork(window:Window, patchwork_size:int, patch_size:int, colours:list) -
         for y in range(0, patchwork_size, patch_size):
             if (y == 0 and x != 0) or (x == patchwork_size - patch_size) and (y != x):
                 fin_patch(window, x, y, patch_size, colours[1])
-            if ((x//patch_size) % 2 == 0): #odd columns
+            if ((x//patch_size) % 2 == 0):
                 if (x <= y) and (x > patch_size) and (y < patchwork_size - patch_size):
                     pen_patch(window, x, y, patch_size, colours[0])
                 elif (y >= x):
@@ -119,7 +119,7 @@ def patchwork(window:Window, patchwork_size:int, patch_size:int, colours:list) -
                 elif (y == patchwork_size - patch_size):
                     pln_patch(window, x, y, patch_size, colours[2])
 
-def main():
+def main() -> None:
     #Program Constants
     PATCH_SIZE:int = 100
     PATCHWORK_SIZE, COLOURS = get_params()
