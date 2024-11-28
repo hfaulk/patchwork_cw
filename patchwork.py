@@ -102,12 +102,12 @@ def reverse_list(list_to_reverse:list) -> list:
 def patchwork(window:Window, patchwork_size:int, patch_size:int, colours:list) -> None:
     for x in range(0, patchwork_size, patch_size):
         for y in range(0, patchwork_size, patch_size):
-            if (y == 0 and x != 0) or (x == patchwork_size - patch_size and y != x):
+            if (y == 0 and x != 0) or (x == patchwork_size - patch_size) and (y != x):
                 fin_patch(window, x, y, patch_size, colours[1])
             if ((x//patch_size) % 2 == 0): #odd columns
-                if (x <= y) and (x > patch_size and y < patchwork_size - patch_size):
+                if (x <= y) and (x > patch_size) and (y < patchwork_size - patch_size):
                     pen_patch(window, x, y, patch_size, colours[0])
-                elif y >= x:
+                elif (y >= x):
                     pln_patch(window, x, y, patch_size, colours[0])
                 elif (y >= patch_size) and (x < patchwork_size - patch_size):
                     pln_patch(window, x, y, patch_size, colours[1])
@@ -116,7 +116,7 @@ def patchwork(window:Window, patchwork_size:int, patch_size:int, colours:list) -
                     pen_patch(window, x, y, patch_size, colours[2])
                 elif (y <= x) and (y >= patch_size):
                     pln_patch(window, x, y, patch_size, colours[1])
-                elif y == patchwork_size - patch_size:
+                elif (y == patchwork_size - patch_size):
                     pln_patch(window, x, y, patch_size, colours[2])
 
 def main():
