@@ -101,8 +101,9 @@ def fin_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, col
         count += line_sep
     return patch_components
     
-def pln_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> None:
-    draw_rect(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), colour, "black")
+def pln_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> list:
+    rect = draw_rect(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), colour, "black")
+    return [rect]
 
 def reverse_list(list_to_reverse:list) -> list:
     reversed_list:list = []
@@ -116,35 +117,40 @@ def patchwork(window:Window, patchwork_size:int, patch_size:int, colours:list) -
         patches.append([])
         for y in range(0, patchwork_size, patch_size):
             if (y == 0 and x != 0) or (x == patchwork_size - patch_size) and (y != x):
-                patches.append(fin_patch(window, x, y, patch_size, colours[1]))
+                patches[-1].append(fin_patch(window, x, y, patch_size, colours[1]))
             if ((x//patch_size) % 2 == 0):
                 if (x <= y) and (x > patch_size) and (y < patchwork_size - patch_size):
-                    patches.append(pen_patch(window, x, y, patch_size, colours[0]))
+                    patches[-1].append(pen_patch(window, x, y, patch_size, colours[0]))
                 elif (y >= x):
-                    patches.append(pln_patch(window, x, y, patch_size, colours[0]))
+                    patches[-1].append(pln_patch(window, x, y, patch_size, colours[0]))
                 elif (y >= patch_size) and (x < patchwork_size - patch_size):
-                    patches.append(pln_patch(window, x, y, patch_size, colours[1]))
+                    patches[-1].append(pln_patch(window, x, y, patch_size, colours[1]))
             else:
                 if (y >= patch_size) and (y < patchwork_size - patch_size) and (y >= x):
-                    patches.append(pen_patch(window, x, y, patch_size, colours[2]))
+                    patches[-1].append(pen_patch(window, x, y, patch_size, colours[2]))
                 elif (y <= x) and (y >= patch_size):
-                    patches.append(pln_patch(window, x, y, patch_size, colours[1]))
+                    patches[-1].append(pln_patch(window, x, y, patch_size, colours[1]))
                 elif (y == patchwork_size - patch_size):
-                    patches.append(pln_patch(window, x, y, patch_size, colours[2]))
+                    patches[-1].append(pln_patch(window, x, y, patch_size, colours[2]))
     return patches
 
 def round_down_nearest_hundred(to_round:int) -> int:
-    hundred = str(to_round)[0]
+    if to_round < 100: hundred:int = 0
+    else: hundred:str = str(to_round)[0]
     return int(hundred) * 100
 
-def outline_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int):
+def outline_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int) -> list:
     outline = []
-    outline.append(draw_line(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y), "black", outline_width = 3))
-    outline.append(draw_line(window, Point(top_left_x, top_left_y), Point(top_left_x, top_left_y + patch_size), "black", outline_width = 3))
-    outline.append(draw_line(window, Point(top_left_x, top_left_y + patch_size), Point(top_left_x + patch_size, top_left_y + patch_size), "black", outline_width = 3))
-    outline.append(draw_line(window, Point(top_left_x + patch_size, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), "black", outline_width = 3))
+    outline.append(draw_line(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y), "black", outline_width = 5))
+    outline.append(draw_line(window, Point(top_left_x, top_left_y), Point(top_left_x, top_left_y + patch_size), "black", outline_width = 5))
+    outline.append(draw_line(window, Point(top_left_x, top_left_y + patch_size), Point(top_left_x + patch_size, top_left_y + patch_size), "black", outline_width = 5))
+    outline.append(draw_line(window, Point(top_left_x + patch_size, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), "black", outline_width = 5))
     return outline
-    
+
+def undraw_patch(patch_components:list) -> None:
+    for component in patch_components:
+        component.undraw()
+
 def main() -> None:
     #Program Constants
     PATCH_SIZE:int = 100
@@ -155,14 +161,30 @@ def main() -> None:
     win.background_colour = "white"
     
     #Draw patchwork
-    patchwork(win, PATCHWORK_SIZE, PATCH_SIZE, COLOURS)
+    patches = patchwork(win, PATCHWORK_SIZE, PATCH_SIZE, COLOURS)
+    
+    #key_functions = {"x": [], "1": }
     
     while True:
-        click = win.get_mouse()
-        print("click")
-        rounded_x = round_down_nearest_hundred(click.x)
-        rounded_y = round_down_nearest_hundred(click.y)
-        outline_patch(win, rounded_x, rounded_y, PATCH_SIZE)
+        click:Point = win.get_mouse()
+        rounded_x:int = round_down_nearest_hundred(click.x)
+        rounded_y:int = round_down_nearest_hundred(click.y)
+        outline:list = outline_patch(win, rounded_x, rounded_y, PATCH_SIZE)
+        while True:
+            selected_patch:list = patches[rounded_x//100][rounded_y//100]
+            key = win.get_key()
+            if key == "x":
+                if selected_patch != []:
+                    undraw_patch(selected_patch)
+                    patches[rounded_x//100][rounded_y//100] = []
+            elif key == "1":
+                if selected_patch == []:
+                    undraw_patch(outline)
+                    patches[rounded_x//100][rounded_y//100] = pen_patch(win, rounded_x, rounded_y, PATCH_SIZE, COLOURS[0])
+                    outline:list = outline_patch(win, rounded_x, rounded_y, PATCH_SIZE)
+            elif key == "Escape":
+                undraw_patch(outline)
+                break
         
     
     #Close window after mouse click
