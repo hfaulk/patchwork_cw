@@ -251,7 +251,7 @@ def draw_rect(window:Window,
               fill_colour:str,
               outline_colour:str="",
               *,
-              outline_width:int=1):
+              outline_width:int=1) -> Rectangle:
     """
     Draws a rectangle on a given window at the given location.
 
@@ -282,6 +282,7 @@ def draw_rect(window:Window,
     rect.outline_width = outline_width
     full_fill(rect, fill_colour, outline_colour)
     rect.draw(window)
+    return rect
     
 def draw_circ(window:Window,
               center:Point,
@@ -321,7 +322,9 @@ def draw_circ(window:Window,
     full_fill(circ, fill_colour, outline_colour)
     circ.draw(window)
     
-def draw_line(window, point_1, point_2, colour):
+def draw_line(window:Window, point_1:Point, point_2:Point, colour:str, *, outline_width:int=1):
     line = Line(point_1, point_2)
     line.fill_colour = colour
+    line.outline_width = outline_width
     line.draw(window)
+    return line
