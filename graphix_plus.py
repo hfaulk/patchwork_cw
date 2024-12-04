@@ -7,7 +7,7 @@ INSTALLATION:
 Add to project directory along with main graphix.py library
 """
 
-__version__ = "0.4"
+__version__ = "0.5"
 __author__ = "Harry Faulkner"
 
 #Imports
@@ -251,7 +251,7 @@ def draw_rect(window:Window,
               fill_colour:str,
               outline_colour:str="",
               *,
-              outline_width:int=1) -> Rectangle:
+              outline_width:int=1) -> list:
     """
     Draws a rectangle on a given window at the given location.
 
@@ -272,7 +272,7 @@ def draw_rect(window:Window,
         
     Returns
     -----
-    None
+    List
     
     See Also
     -----
@@ -290,7 +290,7 @@ def draw_circ(window:Window,
               fill_colour:str,
               outline_colour:str="",
               *,
-              outline_width:int=1):
+              outline_width:int=1) -> list:
     """
     Draws circle with parsed parameters onto given window.
     
@@ -311,7 +311,7 @@ def draw_circ(window:Window,
 
     Returns
     -----
-    None
+    List
     
     See Also
     -----
@@ -322,7 +322,31 @@ def draw_circ(window:Window,
     full_fill(circ, fill_colour, outline_colour)
     circ.draw(window)
     
-def draw_line(window:Window, point_1:Point, point_2:Point, colour:str, *, outline_width:int=1):
+def draw_line(window:Window, point_1:Point, point_2:Point, colour:str, *, outline_width:int=1) -> list:
+    """
+    Draws line with parsed parameters onto given window.
+    
+    Parameters
+    -----
+    window : Window
+        Window to draw rectangle into
+    point_1 : Point
+        Start point of line
+    point_2 : Point
+        End point of line
+    colour : str
+        Colour to make line
+    outline_width : int, optional
+        Determines thickness of line (default value of 1)
+
+    Returns
+    -----
+    List
+    
+    See Also
+    -----
+    None
+    """
     line = Line(point_1, point_2)
     line.fill_colour = colour
     line.outline_width = outline_width
