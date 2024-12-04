@@ -1,5 +1,6 @@
-from graphix import Window, Point, Rectangle, Circle
-from graphix_plus import full_fill, draw_rect, draw_line, draw_circ, relative_point
+from graphix import Window, Point
+from graphix_plus import draw_rect, draw_line
+from time import sleep
 
 def get_params() -> tuple[int, list]:
     #Allowed inputs
@@ -134,6 +135,7 @@ def patchwork(window:Window, patchwork_size:int, patch_size:int, colours:list) -
                     patches[-1].append(pln_patch(window, x, y, patch_size, colours[2]))
     return patches
 
+#Challenge Functions
 def round_down_nearest_hundred(to_round:int) -> int:
     if to_round < 100: hundred:int = 0
     else: hundred:str = str(to_round)[0]
@@ -151,30 +153,54 @@ def undraw_patch(patch_components:list) -> None:
     for component in patch_components:
         component.undraw()
         
-def find_adjacent_empty_patch(all_patches:list, selected_patch_index:list[int, int], direction:str):
+def find_adjacent_empty_patch(all_patches:list, selected_patch_index:list[int, int], direction:str) -> list[int, int]:
     directions:dict = {"Left": [i for i in range(selected_patch_index[0]-1, -1, -1)],
                        "Right": [i for i in range(selected_patch_index[0]+1, len(all_patches), 1)],
                        "Up": [i for i in range(selected_patch_index[1]-1, -1, -1)],
                        "Down": [i for i in range(selected_patch_index[1]+1, len(all_patches[selected_patch_index[0]]), 1)]}
     
-    if direction in ["Left", "Right"]:
-        x_index:int = i
-        y_index:int = selected_patch_index[1]
+    adjacent_empty:list = []
     
     if direction in ["Left", "Right"]:
         for i in directions[direction]:
             if all_patches[i][selected_patch_index[1]] == []:
-                adjacent_empty:list = [i, selected_patch_index[1]]
+                adjacent_empty.append([i, selected_patch_index[1]])
                 break
     
     elif direction in ["Up", "Down"]:
         for i in directions[direction]:
             if all_patches[selected_patch_index[0]][i] == []:
-                adjacent_empty:list = [selected_patch_index[0], i]
+                adjacent_empty.append([selected_patch_index[0], i])
                 break
-            
-    return adjacent_empty
+    if adjacent_empty == []: return None
+    else: return adjacent_empty[0]
+
+def coordinate_delta(original_coords:list, new_coords:list) -> list:
+    delta = [(new_coords[0] - original_coords[0]),
+             (new_coords[1] - original_coords[1])]
+    return delta
+
+def move_patch(patches:list, selected_index:list[int ,int], new_index:list[int, int]) -> list:
+    ANIM_STEP = 10
+    #Getting list with each object that makes selected patch
+    selected_patch_components = patches[selected_index[0]][selected_index[1]]
+    #Getting difference in coords so can move to correct position
+    delta = coordinate_delta(selected_index, new_index)
+    delta = [i*100 for i in delta] #x100 to both coords to scale up to size of tiles
+    if delta[0] != 0: increment = [delta[0] // ANIM_STEP, 0]
+    else: increment = [0, delta[1] // ANIM_STEP]
+    #Moving each part of patch then updating list of all patches
+    for i in range(ANIM_STEP):
+        for component in selected_patch_components:
+            component.move(*increment)
+        sleep(0.01)
+        
+    patches[new_index[0]][new_index[1]] = patches[selected_index[0]][selected_index[1]]
+    patches[selected_index[0]][selected_index[1]] = []
     
+    return patches
+    
+#Main
 def main() -> None:
     #Program Constants
     PATCH_SIZE:int = 100
@@ -209,7 +235,10 @@ def main() -> None:
                         outline:list = outline_patch(win, rounded_x, rounded_y, PATCH_SIZE)
                 elif key in ["Left", "Right", "Up", "Down"]:
                     if selected_patch != []:
-                        find_adjacent_empty_patch(patches, [rounded_x//100, rounded_y//100], key)
+                        adjacent_coords = find_adjacent_empty_patch(patches, [rounded_x//100, rounded_y//100], key)
+                        if adjacent_coords == None: continue
+                        else:
+                            patches = move_patch(patches, [rounded_x//100, rounded_y//100], adjacent_coords)
                 elif key == "x":
                     if selected_patch != []:
                         key_functions[key](selected_patch)
