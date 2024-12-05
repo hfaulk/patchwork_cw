@@ -180,7 +180,7 @@ def coordinate_delta(original_coords:list, new_coords:list) -> list:
              (new_coords[1] - original_coords[1])]
     return delta
 
-def move_patch(patches:list, selected_index:list[int ,int], new_index:list[int, int]) -> list:
+def move_patch(window:Window, patches:list, selected_index:list[int ,int], new_index:list[int, int]) -> list:
     ANIM_STEP = 10
     #Getting list with each object that makes selected patch
     selected_patch_components = patches[selected_index[0]][selected_index[1]]
@@ -192,7 +192,9 @@ def move_patch(patches:list, selected_index:list[int ,int], new_index:list[int, 
     #Moving each part of patch then updating list of all patches
     for i in range(ANIM_STEP):
         for component in selected_patch_components:
+            component.undraw() #Have to redraw with each movement to remain on top
             component.move(*increment)
+            component.draw(window)
         sleep(0.01)
         
     patches[new_index[0]][new_index[1]] = patches[selected_index[0]][selected_index[1]]
@@ -238,7 +240,7 @@ def main() -> None:
                         adjacent_coords = find_adjacent_empty_patch(patches, [rounded_x//100, rounded_y//100], key)
                         if adjacent_coords == None: continue
                         else:
-                            patches = move_patch(patches, [rounded_x//100, rounded_y//100], adjacent_coords)
+                            patches = move_patch(win, patches, [rounded_x//100, rounded_y//100], adjacent_coords)
                 elif key == "x":
                     if selected_patch != []:
                         key_functions[key](selected_patch)
