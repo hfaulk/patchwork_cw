@@ -208,7 +208,7 @@ def main() -> None:
     patches = patchwork(win, PATCHWORK_SIZE, PATCH_SIZE, COLOURS)
     
     key_functions:dict = {"x": undraw_patch, "Escape": undraw_patch,
-                          "Left": [], "Right": [], "Up": [], "Down": [],
+                          "Left": move_patch, "Right": move_patch, "Up": move_patch, "Down": move_patch,
                           "1": [pen_patch, 0], "2": [pen_patch, 1], "3": [pen_patch, 2],
                           "4": [fin_patch, 0], "5": [fin_patch, 1], "6": [fin_patch, 2],
                           "7": [pln_patch, 0], "8": [pln_patch, 1], "9": [pln_patch, 2]}
@@ -232,7 +232,7 @@ def main() -> None:
                         adjacent_coords = find_adjacent_empty_patch(patches, [rounded_x//100, rounded_y//100], key)
                         if adjacent_coords == None: continue
                         else:
-                            patches = move_patch(win, patches, [rounded_x//100, rounded_y//100], adjacent_coords)
+                            patches = key_functions[key](win, patches, [rounded_x//100, rounded_y//100], adjacent_coords)
                 elif key == "x":
                     if selected_patch != []:
                         key_functions[key](selected_patch)
