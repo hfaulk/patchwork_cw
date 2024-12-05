@@ -4,7 +4,7 @@ from time import sleep
 
 def get_params() -> tuple[int, list]:
     #Allowed inputs
-    valid_sizes:list[int] = [5, 7, 9, 11]
+    valid_sizes:list[int] = [5, 7, 9]
     valid_colours:list[str] = ["red", "green", "blue", "magenta", "orange", "purple"]
     
     while True:
@@ -147,10 +147,10 @@ def undraw_patch(patch_components:list) -> None:
         component.undraw()
         
 def find_adjacent_empty_patch(all_patches:list, selected_patch_index:list[int, int], direction:str) -> list[int, int]:
-    directions:dict = {"Left": [i for i in range(selected_patch_index[0]-1, -1, -1)],
+    directions:dict = {"Left":  [i for i in range(selected_patch_index[0]-1, -1, -1)],
                        "Right": [i for i in range(selected_patch_index[0]+1, len(all_patches), 1)],
-                       "Up": [i for i in range(selected_patch_index[1]-1, -1, -1)],
-                       "Down": [i for i in range(selected_patch_index[1]+1, len(all_patches[selected_patch_index[0]]), 1)]}
+                       "Up":    [i for i in range(selected_patch_index[1]-1, -1, -1)],
+                       "Down":  [i for i in range(selected_patch_index[1]+1, len(all_patches[selected_patch_index[0]]), 1)]}
     
     adjacent_empty:list = []
     
@@ -159,7 +159,6 @@ def find_adjacent_empty_patch(all_patches:list, selected_patch_index:list[int, i
             if all_patches[i][selected_patch_index[1]] == []:
                 adjacent_empty.append([i, selected_patch_index[1]])
                 break
-    
     elif direction in ["Up", "Down"]:
         for i in directions[direction]:
             if all_patches[selected_patch_index[0]][i] == []:
