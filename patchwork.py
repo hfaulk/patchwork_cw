@@ -4,7 +4,7 @@ from time import sleep
 
 def get_params() -> tuple[int, list]:
     #Allowed inputs
-    valid_sizes:list[int] = [5, 7, 9]
+    valid_sizes:list[int] = [5, 7, 9, 11]
     valid_colours:list[str] = ["red", "green", "blue", "magenta", "orange", "purple"]
     
     while True:
@@ -23,11 +23,11 @@ def get_params() -> tuple[int, list]:
         colours.append(input("Enter first colour: ").lower())
         colours.append(input("Enter second colour: ").lower())
         colours.append(input("Enter third colour: ").lower())
-        if len(colours) != len(set(colours)):
-            print("(-) All colours must be different.\n")
-            continue
         if (colours[0] not in valid_colours) or (colours[1] not in valid_colours) or (colours[2] not in valid_colours):
             print(f"(-) Colours must be one of {valid_colours}.\n")
+            continue
+        if len(colours) != len(set(colours)):
+            print("(-) All colours must be different.\n")
             continue
         break
     
@@ -36,8 +36,7 @@ def get_params() -> tuple[int, list]:
 def pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> list:
     sub_patch_size:int = patch_size // 5
     patch_flag:bool = True
-    true_count:int = 0
-    false_count:int = 0
+    true_count, false_count = 0, 0
     patch_components:list = []
     for y in range(top_left_y, top_left_y + patch_size, sub_patch_size):
         for x in range(top_left_x, top_left_x + patch_size, sub_patch_size):
@@ -64,11 +63,11 @@ def sub_pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int,
     rect_size:int = patch_size // 4 #There are 4 rectangles per patch
     patch_flag:bool = True
     
-    colours = [colour, "white"]
+    colours:list = [colour, "white"]
     
     patch_components:list = []
     
-    if flipped == True: colours = reverse_list(colours)
+    if flipped == True: colours.reverse()
         
     if variant == True:
         for y in range(top_left_y, top_left_y + patch_size, rect_size):
@@ -105,12 +104,6 @@ def fin_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, col
 def pln_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> list:
     rect = draw_rect(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), colour, "black")
     return [rect]
-
-def reverse_list(list_to_reverse:list) -> list:
-    reversed_list:list = []
-    for index in range(len(list_to_reverse) - 1, -1, -1):
-        reversed_list.append(list_to_reverse[index])
-    return reversed_list
 
 def patchwork(window:Window, patchwork_size:int, patch_size:int, colours:list) -> list:
     patches = []
@@ -248,10 +241,5 @@ def main() -> None:
                 elif key == "Escape":
                     key_functions[key](outline)
                     break
-        
-    
-    #Close window after mouse click
-    win.get_mouse()
-    win.close()
     
 main()
