@@ -34,6 +34,7 @@ def get_params() -> tuple[int, list]:
     return patchwork_size*100, colours
 
 def pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> list:
+    #Penultimate patch design (from coursework document)
     sub_patch_size:int = patch_size // 5
     patch_flag:bool = True
     true_count, false_count = 0,0
@@ -60,6 +61,7 @@ def pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, col
     return patch_components
     
 def sub_pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str, variant:bool, flipped:bool) -> list:
+    #Function to create each section of the penultimate patch
     rect_size:int = patch_size // 4 #There are 4 rectangles per patch
     patch_flag:bool = True
     
@@ -82,6 +84,7 @@ def sub_pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int,
     return patch_components
 
 def fin_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> list:
+    #Final patch design (from coursework document)
     draw_rect(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), "white", "black")
     line_sep:int = patch_size // 10
     count:int = 1
@@ -215,6 +218,8 @@ def handle_key(window:Window, patches:list, key:str, rounded_x:int, rounded_y:in
         return handle_digit(window, selected_patch, key, patches, rounded_x, rounded_y, outline, patch_size, colours)
     elif key in action_keys:
         return handle_action(window, selected_patch, key, patches, rounded_x, rounded_y, outline)
+    else:
+        return patches, outline #Incase an invalid key is pressed
     
 def handle_digit(window:Window, selected_patch:list, key:str, patches:list, rounded_x:int, rounded_y:int, outline:list, patch_size:int, colours:list) -> list:
     digit_keys:dict = {"1": [pen_patch, 0], "2": [pen_patch, 1], "3": [pen_patch, 2],
