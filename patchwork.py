@@ -42,16 +42,16 @@ def pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, col
         for x in range(top_left_x, top_left_x + patch_size, sub_patch_size):
             patch_components.append(draw_rect(window, Point(x, y), Point(x+sub_patch_size, y+sub_patch_size), "white", "black"))
                         
-            if patch_flag == True and true_count < 1:
+            if patch_flag and true_count < 1:
                 flipped:bool = False
                 true_count += 1
-            elif patch_flag == False and false_count < 1:
+            elif not patch_flag and false_count < 1:
                 flipped:bool = False
                 false_count += 1
-            elif patch_flag == True and true_count == 1:
+            elif patch_flag and true_count == 1:
                 flipped:bool = True
                 true_count = 0
-            elif patch_flag == False and false_count == 1:
+            elif not patch_flag and false_count == 1:
                 flipped:bool = True
                 false_count = 0
             patch_components += sub_pen_patch(window, x, y, sub_patch_size, colour, patch_flag, flipped)
@@ -62,25 +62,22 @@ def pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, col
 def sub_pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str, variant:bool, flipped:bool) -> list:
     rect_size:int = patch_size // 4 #There are 4 rectangles per patch
     patch_flag:bool = True
-    
     colours:list = [colour, "white"]
-    
     patch_components:list = []
     
-    if flipped == True: colours.reverse()
+    if flipped: colours.reverse()
+    
+    if patch_flag: fill_colour = colours[0]
+    elif not patch_flag: fill_colour = colours[1]
         
-    if variant == True:
+    if variant:
         for y in range(top_left_y, top_left_y + patch_size, rect_size):
-            if patch_flag == True: fill_colour = colours[0]
-            elif patch_flag == False: fill_colour = colours[1]
-            patch_flag:bool = not patch_flag
             patch_components.append(draw_rect(window, Point(top_left_x, y), Point(top_left_x + patch_size, y+rect_size), fill_colour, "black"))
-    elif variant == False:
+    elif not variant:
         for x in range(top_left_x, top_left_x + patch_size, rect_size):
-            if patch_flag == True: fill_colour = colours[0]
-            elif patch_flag == False: fill_colour = colours[1]
-            patch_flag:bool = not patch_flag
             patch_components.append(draw_rect(window, Point(x, top_left_y), Point(x + rect_size, top_left_y + patch_size), fill_colour, "black"))
+            
+    patch_flag:bool = not patch_flag
     return patch_components
 
 def fin_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> list:
@@ -197,7 +194,7 @@ def move_patch(window:Window, patches:list, selected_index:list[int ,int], new_i
 def handle_click(window:Window, patch_size:int, click_pos:Point) -> dict:
     rounded_x = round_down_nearest_hundred(click_pos.x)
     rounded_y = round_down_nearest_hundred(click_pos.y)
-    outline:list = outline_patch(window, rounded_x, rounded_y, patch_size)
+    outline:list = outline_patch(window, rounded_x * 100, rounded_y * 100, patch_size)
     
     return {"x": rounded_x,
             "y": rounded_y,
@@ -219,9 +216,12 @@ def handle_digit(window:Window, selected_patch:list, key:str, patches:list, roun
                        "4": [fin_patch, 0], "5": [fin_patch, 1], "6": [fin_patch, 2],
                        "7": [pln_patch, 0], "8": [pln_patch, 1], "9": [pln_patch, 2]}
     
+    rounded_x *= 100
+    rounded_y *= 100
+    
     if selected_patch == []:
         undraw_patch(outline)
-        patches[rounded_x][rounded_y] = digit_keys[key][0](window, rounded_x, rounded_y, patch_size, colours[digit_keys[key][1]])
+        patches[rounded_x//100][rounded_y//100] = digit_keys[key][0](window, rounded_x, rounded_y, patch_size, colours[digit_keys[key][1]])
         outline:list = outline_patch(window, rounded_x, rounded_y, patch_size)
         
     return patches, outline
