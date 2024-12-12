@@ -36,12 +36,12 @@ def get_params() -> tuple[int, list]:
 def pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> list:
     sub_patch_size:int = patch_size // 5
     patch_flag:bool = True
-    true_count, false_count = 0, 0
+    true_count, false_count = 0,0
     patch_components:list = []
     for y in range(top_left_y, top_left_y + patch_size, sub_patch_size):
         for x in range(top_left_x, top_left_x + patch_size, sub_patch_size):
             patch_components.append(draw_rect(window, Point(x, y), Point(x+sub_patch_size, y+sub_patch_size), "white", "black"))
-                        
+            
             if patch_flag and true_count < 1:
                 flipped:bool = False
                 true_count += 1
@@ -54,30 +54,31 @@ def pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, col
             elif not patch_flag and false_count == 1:
                 flipped:bool = True
                 false_count = 0
+                
             patch_components += sub_pen_patch(window, x, y, sub_patch_size, colour, patch_flag, flipped)
-            
             patch_flag:bool = not patch_flag
     return patch_components
     
 def sub_pen_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str, variant:bool, flipped:bool) -> list:
     rect_size:int = patch_size // 4 #There are 4 rectangles per patch
     patch_flag:bool = True
+    
     colours:list = [colour, "white"]
+    
     patch_components:list = []
-    
+
     if flipped: colours.reverse()
-    
-    if patch_flag: fill_colour = colours[0]
-    elif not patch_flag: fill_colour = colours[1]
         
     if variant:
         for y in range(top_left_y, top_left_y + patch_size, rect_size):
+            fill_colour = colours[int(not patch_flag)]
+            patch_flag:bool = not patch_flag
             patch_components.append(draw_rect(window, Point(top_left_x, y), Point(top_left_x + patch_size, y+rect_size), fill_colour, "black"))
     elif not variant:
         for x in range(top_left_x, top_left_x + patch_size, rect_size):
+            fill_colour = colours[int(not patch_flag)]
+            patch_flag:bool = not patch_flag
             patch_components.append(draw_rect(window, Point(x, top_left_y), Point(x + rect_size, top_left_y + patch_size), fill_colour, "black"))
-            
-    patch_flag:bool = not patch_flag
     return patch_components
 
 def fin_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, colour:str) -> list:
@@ -133,10 +134,14 @@ def round_down_nearest_hundred(to_round:int) -> int:
 
 def outline_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, outline_width:int=5) -> list:
     outline = []
-    outline.append(draw_line(window, Point(top_left_x, top_left_y), Point(top_left_x + patch_size, top_left_y), "black", outline_width = outline_width))
-    outline.append(draw_line(window, Point(top_left_x, top_left_y), Point(top_left_x, top_left_y + patch_size), "black", outline_width = outline_width))
-    outline.append(draw_line(window, Point(top_left_x, top_left_y + patch_size), Point(top_left_x + patch_size, top_left_y + patch_size), "black", outline_width = outline_width))
-    outline.append(draw_line(window, Point(top_left_x + patch_size, top_left_y), Point(top_left_x + patch_size, top_left_y + patch_size), "black", outline_width = outline_width))
+    corners = [(top_left_x, top_left_y),
+               (top_left_x + patch_size, top_left_y),
+               (top_left_x + patch_size, top_left_y + patch_size),
+               (top_left_x, top_left_y + patch_size)]
+    for i in range(len(corners)):
+        next_i = (i + 1) % len(corners)
+        outline.append(draw_line(window, Point(corners[i][0], corners[i][1]), Point(corners[next_i][0], corners[next_i][1]), "black", outline_width = outline_width))
+        
     return outline
 
 def undraw_patch(patch_components:list) -> None:
