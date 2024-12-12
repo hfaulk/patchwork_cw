@@ -212,7 +212,7 @@ def handle_key(window:Window, patches:list, key:str, rounded_x:int, rounded_y:in
     if key in digit_keys:
         return handle_digit(window, selected_patch, key, patches, rounded_x, rounded_y, outline, patch_size, colours)
     elif key in action_keys:
-        return handle_action(window, selected_patch, key, patches, rounded_x, rounded_y, outline, patch_size, colours)
+        return handle_action(window, selected_patch, key, patches, rounded_x, rounded_y, outline)
     
 def handle_digit(window:Window, selected_patch:list, key:str, patches:list, rounded_x:int, rounded_y:int, outline:list, patch_size:int, colours:list) -> list:
     digit_keys:dict = {"1": [pen_patch, 0], "2": [pen_patch, 1], "3": [pen_patch, 2],
@@ -226,7 +226,7 @@ def handle_digit(window:Window, selected_patch:list, key:str, patches:list, roun
         
     return patches, outline
     
-def handle_action(window:Window, selected_patch:list, key:str, patches:list, rounded_x:int, rounded_y:int, outline:list, patch_size:int, colours:list) -> list:
+def handle_action(window:Window, selected_patch:list, key:str, patches:list, rounded_x:int, rounded_y:int, outline:list) -> list:
     action_keys:dict = {"x": undraw_patch, "Escape": undraw_patch,
                         "Left": move_patch, "Right": move_patch, "Up": move_patch, "Down": move_patch}
     
