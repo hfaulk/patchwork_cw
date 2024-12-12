@@ -132,7 +132,7 @@ def patchwork(window:Window, patchwork_size:int, patch_size:int, colours:list) -
 def round_down_nearest_hundred(to_round:int) -> int:
     if to_round < 100: hundred:int = 0
     else: hundred:str = str(to_round)[0]
-    return int(hundred) * 100
+    return int(hundred)
 
 def outline_patch(window:Window, top_left_x:int, top_left_y:int, patch_size:int, outline_width:int=5) -> list:
     outline = []
@@ -194,6 +194,56 @@ def move_patch(window:Window, patches:list, selected_index:list[int ,int], new_i
     
     return patches
     
+def handle_click(window:Window, patch_size:int, click_pos:Point) -> dict:
+    rounded_x = round_down_nearest_hundred(click_pos.x)
+    rounded_y = round_down_nearest_hundred(click_pos.y)
+    outline:list = outline_patch(window, rounded_x, rounded_y, patch_size)
+    
+    return {"x": rounded_x,
+            "y": rounded_y,
+            "outline": outline}
+    
+def handle_key(window:Window, patches:list, key:str, rounded_x:int, rounded_y:int, outline:list, patch_size:int, colours:list[str]):
+    digit_keys:list = [str(i) for i in range(1, 10)]
+    action_keys:list = ["x", "Escape", "Left", "Right", "Up", "Down"]
+    
+    selected_patch:list = patches[rounded_x][rounded_y]
+    
+    if key in digit_keys:
+        return handle_digit(window, selected_patch, key, patches, rounded_x, rounded_y, outline, patch_size, colours)
+    elif key in action_keys:
+        return handle_action(window, selected_patch, key, patches, rounded_x, rounded_y, outline, patch_size, colours)
+    
+def handle_digit(window:Window, selected_patch:list, key:str, patches:list, rounded_x:int, rounded_y:int, outline:list, patch_size:int, colours:list) -> list:
+    digit_keys:dict = {"1": [pen_patch, 0], "2": [pen_patch, 1], "3": [pen_patch, 2],
+                       "4": [fin_patch, 0], "5": [fin_patch, 1], "6": [fin_patch, 2],
+                       "7": [pln_patch, 0], "8": [pln_patch, 1], "9": [pln_patch, 2]}
+    
+    if selected_patch == []:
+        undraw_patch(outline)
+        patches[rounded_x][rounded_y] = digit_keys[key][0](window, rounded_x, rounded_y, patch_size, colours[digit_keys[key][1]])
+        outline:list = outline_patch(window, rounded_x, rounded_y, patch_size)
+        
+    return patches, outline
+    
+def handle_action(window:Window, selected_patch:list, key:str, patches:list, rounded_x:int, rounded_y:int, outline:list, patch_size:int, colours:list) -> list:
+    action_keys:dict = {"x": undraw_patch, "Escape": undraw_patch,
+                        "Left": move_patch, "Right": move_patch, "Up": move_patch, "Down": move_patch}
+    
+    if key in ["Left", "Right", "Up", "Down"]:
+        if selected_patch != []:
+            adjacent_coords = find_adjacent_empty_patch(patches, [rounded_x, rounded_y], key)
+            if adjacent_coords != None: 
+                patches = action_keys[key](window, patches, [rounded_x, rounded_y], adjacent_coords)
+    elif key == "x":
+        if selected_patch != []:
+            action_keys[key](selected_patch)
+            patches[rounded_x][rounded_y] = []
+    elif key == "Escape":
+        action_keys[key](outline)
+        
+    return patches, outline
+
 #Main
 def main() -> None:
     #Program Constants
@@ -206,39 +256,16 @@ def main() -> None:
     
     #Draw patchwork
     patches = patchwork(win, PATCHWORK_SIZE, PATCH_SIZE, COLOURS)
+    active_selection:bool = False
     
-    key_functions:dict = {"x": undraw_patch, "Escape": undraw_patch,
-                          "Left": move_patch, "Right": move_patch, "Up": move_patch, "Down": move_patch,
-                          "1": [pen_patch, 0], "2": [pen_patch, 1], "3": [pen_patch, 2],
-                          "4": [fin_patch, 0], "5": [fin_patch, 1], "6": [fin_patch, 2],
-                          "7": [pln_patch, 0], "8": [pln_patch, 1], "9": [pln_patch, 2]}
-
     while True:
-        click = win.get_mouse()
-        rounded_x:int = round_down_nearest_hundred(click.x)
-        rounded_y:int = round_down_nearest_hundred(click.y)
-        outline:list = outline_patch(win, rounded_x, rounded_y, PATCH_SIZE)
-        while True:
-            selected_patch:list = patches[rounded_x//100][rounded_y//100]
-            key = win.get_key()
-            if key in list(key_functions.keys()):
-                if key.isdigit():
-                    if selected_patch == []:
-                        undraw_patch(outline)
-                        patches[rounded_x//100][rounded_y//100] = key_functions[key][0](win, rounded_x, rounded_y, PATCH_SIZE, COLOURS[key_functions[key][1]])
-                        outline:list = outline_patch(win, rounded_x, rounded_y, PATCH_SIZE)
-                elif key in ["Left", "Right", "Up", "Down"]:
-                    if selected_patch != []:
-                        adjacent_coords = find_adjacent_empty_patch(patches, [rounded_x//100, rounded_y//100], key)
-                        if adjacent_coords == None: continue
-                        else:
-                            patches = key_functions[key](win, patches, [rounded_x//100, rounded_y//100], adjacent_coords)
-                elif key == "x":
-                    if selected_patch != []:
-                        key_functions[key](selected_patch)
-                        patches[rounded_x//100][rounded_y//100] = []
-                elif key == "Escape":
-                    key_functions[key](outline)
-                    break
+        if not active_selection:
+            click = win.get_mouse()
+            click_data = handle_click(win, PATCH_SIZE, click)
+            active_selection = True
+            
+        key = win.get_key()
+        if key == "Escape": active_selection = False
+        patches, click_data["outline"] = handle_key(win, patches, key, click_data["x"], click_data["y"], click_data["outline"], PATCH_SIZE, COLOURS)
     
 main()
