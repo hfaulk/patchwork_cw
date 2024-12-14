@@ -3,7 +3,7 @@ from graphix import Window, Point, Rectangle, Line
 
 def get_params() -> tuple[int, list]:
     #Allowed inputs
-    valid_sizes:list[int] = [5, 7, 9]
+    valid_sizes:list[int] = [3, 5, 7, 9]
     valid_colours:list[str] = ["red",
                                "green",
                                "blue",
@@ -42,6 +42,7 @@ def get_params() -> tuple[int, list]:
 def full_fill(item,
               fill_colour:str,
               outline_colour:str="") -> None:
+    #Fills both inside & outline of given shape
     if fill_colour is None: pass
     else:
         if outline_colour == "": outline_colour = fill_colour
@@ -255,10 +256,9 @@ def patchwork(window:Window,
     return patches
 
 #Challenge Functions
-def round_down_nearest_hundred(to_round:int) -> int:
-    if to_round < 100: hundred:int = 0
-    else: hundred:str = str(to_round)[0]
-    return int(hundred)
+def round_down_nearest_power_of_ten(to_round:int) -> int:
+    highest_power_of_ten = 10 ** (len(str(to_round)) - 1)
+    return (to_round // highest_power_of_ten) * highest_power_of_ten
 
 def outline_patch(window:Window,
                   top_left_x:int,
@@ -353,8 +353,8 @@ def move_patch(window:Window,
     return patches
     
 def handle_click(window:Window, patch_size:int, click_pos:Point) -> dict:
-    rounded_x = round_down_nearest_hundred(click_pos.x)
-    rounded_y = round_down_nearest_hundred(click_pos.y)
+    rounded_x = round_down_nearest_power_of_ten(click_pos.x) // 100
+    rounded_y = round_down_nearest_power_of_ten(click_pos.y) // 100
     outline:list = outline_patch(window,
                                  rounded_x * 100,
                                  rounded_y * 100,
