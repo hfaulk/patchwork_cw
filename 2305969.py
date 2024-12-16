@@ -3,13 +3,17 @@ from graphix import Window, Point, Rectangle, Line
 
 def get_params() -> tuple[int, list]:
     #Allowed inputs
-    valid_sizes:list[int] = [3, 5, 7, 9]
+    valid_sizes:list[int] = [5, 7, 9]
     valid_colours:list[str] = ["red",
                                "green",
                                "blue",
                                "magenta",
                                "orange",
                                "purple"]
+    
+    print("Valid inputs:")
+    print(f"Sizes: {valid_sizes}")
+    print(f"Colours: {valid_colours}\n")
     
     while True:
         #Patchwork Params
